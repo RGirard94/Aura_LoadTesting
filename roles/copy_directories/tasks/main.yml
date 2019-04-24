@@ -1,0 +1,4 @@
+- name: copy load_testing_python_scripts
+  copy:
+    src: "load_testing_python_scripts"
+    dest: "/home/ansible"

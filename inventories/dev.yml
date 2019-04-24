@@ -1,0 +1,8 @@
+---
+
+all:
+  hosts:
+    192.168.33.22:
+      ansible_ssh_user: ansible
+      is_prod: false
+      domain: "aura.healthcare.local"
