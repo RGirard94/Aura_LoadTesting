@@ -3,17 +3,15 @@
   command: python3.6 /home/ansible/load_testing_python_scripts/random_data_generator/source/random_data_generator.py -rr {{ nb_Rr_data }} -mg {{ nb_Mg_data }} -ma {{ nb_Ma_data }}
 
 - name: timestamp
-  debug:
-    var=ansible_date_time
+  command: "date +\"%T\""
   register: injection_start
 
 - name: execute python manual data injection file script
   become: true
   command: python3.6 /home/ansible/load_testing_python_scripts/manual_data_injection/manual_data_injection.py --directory {{ directory_to_inject }}
 
-- name: timestamp
-  debug:
-    var=ansible_date_time
+- name: timestamp 2
+  command: "date +\"%T\""
   register: injection_end
 
 - name: recover number of insert
@@ -90,7 +88,7 @@
             Number of inserted z_acm : {{ MotionAccelerometer.query_results[0].count_x_acm }}
             Number of uninserted z_acm data : {{ nb_Ma_data|int - MotionAccelerometer.query_results[0].count_z_acm|int }}
          --------------------------------------------------------------------------------------------------------------
-         Total number of missing data : {{ nb_Rr_data|int * 1 - RrInterval.query_results[0].count_RrInterval|int + nb_Mg_data|int * 3 - MotionGyroscope.query_results[0].count_x_gyro|int - MotionGyroscope.query_results[0].count_y_gyro|int - MotionGyroscope.query_results[0].count_z_gyro|int + nb_Ma_data|int * 3 - MotionAccelerometer.query_results[0].count_x_acm|int - MotionAccelerometer.query_results[0].count_y_acm|int - MotionAccelerometer.query_results[0].count_z_acm|int }}
-         injection duration : {{ (injection_end.ansible_date_time.date + " " + injection_end.ansible_date_time.time)|to_datetime - (injection_start.ansible_date_time.date + " " + injection_start.ansible_date_time.time)|to_datetime }}
+         injection start : {{ injection_start.end }}
+         injection duration : {{ (injection_end.stdout_lines[0]|to_datetime('%H:%M:%S') - injection_start.stdout_lines[0]|to_datetime('%H:%M:%S')).seconds }}
   debug:
     msg: "{{ msg.split('\n') }}"
