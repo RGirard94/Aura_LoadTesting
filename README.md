@@ -30,4 +30,6 @@ Next you can perform your loading test with the following command.
 You need to precise the amount of nb_Xx_data variable you want to generate.
 Example : `nb_Rr_data=1000000`
 
+Thus, 3 types of files are generated. Then, theses files are injected in the influxdb database.
+
 Once the tests are performed, you can vizualise graph using kibana UI implemented with the Aura infrastructure
