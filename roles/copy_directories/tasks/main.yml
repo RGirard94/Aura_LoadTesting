@@ -2,3 +2,15 @@
   copy:
     src: "load_testing_python_scripts"
     dest: "/home/ansible"
+
+- name: create directories
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: true
+  with_items:
+    - "{{ data_directory }}"
+    - "{{ generated_data }}"
+    - "{{ success_data }}"
+    - "{{ problem_data }}"

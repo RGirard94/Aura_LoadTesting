@@ -8,3 +8,7 @@
       tags: copy_directories
     - role: load_testing
       tags: load_testing
+    - role: read_testing
+      tags: read_testing
+    - role: queries_during_injection
+      tags: queries_during_injection

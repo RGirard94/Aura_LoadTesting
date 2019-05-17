@@ -1,0 +1,56 @@
+- name: execute python random data generator script
+  become: true
+  command: python3.6 /home/ansible/load_testing_python_scripts/random_data_generator/source/random_data_generator.py -rr {{ nb_Rr_data }} -mg {{ nb_Mg_data }} -ma {{ nb_Ma_data }}
+
+- name: execute python manual data injection file script
+  become: true
+  command: python3.6 /home/ansible/load_testing_python_scripts/manual_data_injection/manual_data_injection.py --directory {{ directory_to_inject }}
+
+- name: timestamp
+  command: "date +\"%T\""
+  register: reading_start
+
+- name: recover inserted data
+  become: true
+  influxdb_query:
+    hostname: "db.aura.healthcare.local"
+    port: 80
+    database_name: "physio_signals"
+    query: "select * from MotionAccelerometer"
+  register: MotionAccelerometer
+
+- name: timestamp 2
+  command: "date +\"%T\""
+  register: reading_end
+
+- name: destroy physio_signals
+  become: true
+  influxdb_database:
+    hostname: "db.aura.healthcare.local"
+    port: 80
+    database_name: "physio_signals"
+    state: absent
+
+- name: copy inserted data in file
+  copy:
+    content: "{{ MotionAccelerometer }}"
+    dest: /home/ansible/read_test.log
+
+- name: count number of x_acm in file
+  shell: fgrep -o x_acm read_test.log | wc -l
+  register: nb_of_x_acm
+
+- name: details of the test
+  vars:
+    msg: |
+      Total number of data to inject : {{ nb_Rr_data|int + nb_Mg_data|int + nb_Ma_data|int }}
+      --------------------------------------------------------------------------------------------------------------
+      MOTIONACCELEROMETER
+      -----------------
+         Number of x_acm data to inject : {{ nb_Ma_data }}
+         Number of x_acm counted in read_test.log : {{ nb_of_x_acm.stdout }}
+      --------------------------------------------------------------------------------------------------------------
+      injection start : {{ reading_start.end }}
+      injection duration : {{ (reading_end.stdout_lines[0]|to_datetime('%H:%M:%S') - reading_start.stdout_lines[0]|to_datetime('%H:%M:%S')).seconds }}
+  debug:
+    msg: "{{ msg.split('\n') }}"

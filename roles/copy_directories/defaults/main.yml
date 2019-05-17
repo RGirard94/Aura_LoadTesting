@@ -1,0 +1,7 @@
+data_directory: "/home/ansible/data"
+
+generated_data: "{{ data_directory }}/aura_generated_data"
+
+success_data: "{{ data_directory }}/success"
+
+problem_data: "{{ data_directory }}/problem"

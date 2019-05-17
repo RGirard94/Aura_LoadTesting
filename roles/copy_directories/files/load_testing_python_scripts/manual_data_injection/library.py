@@ -10,11 +10,30 @@ import glob
 import json
 import pandas as pd
 import numpy as np
+import logging
 
 # JSON field values
 TYPE_PARAM_NAME = "type"
 USER_PARAM_NAME = "user"
 DEVICE_PARAM_NAME = "device_address"
+
+# CREATE LOGGER TO GET LOG ABOUT WRITTEN POINTS #
+
+def change_timestamp(unused_1, unused_2):
+    '''sec and what is unused.'''
+    change_timestamp_time = datetime.datetime.now()
+    return change_timestamp_time.timetuple()
+
+logging.Formatter.converter = change_timestamp
+logging.basicConfig(
+    filename='/home/ansible/personal_logs/influxdb_manual_logs_input-json.log',
+    filemode='a',
+    format='%(asctime)s.%(msecs)03d : %(message)s',
+    level=logging.INFO,
+    datefmt="%B %d %Y, %H:%M:%S",
+)
+
+DATA_COUNTER_LIST = []
 
 # ---------------- JSON TO DATAFRAME CONVERSION METHODS ---------------- #
 
@@ -321,6 +340,8 @@ def write_file_to_influxdb(file: str, path_to_files: str, df_client) -> bool:
     # write to InfluxDB
     try:
         df_client.write_points(data_to_write, measurement=measurement, tags=tags, protocol="json")
+        DATA_COUNTER_LIST.append(len(data_to_write))
+        logging.info('monitoring-MotionAccMotionGyr-input : {}'.format(sum(DATA_COUNTER_LIST)))
     except:
         print("Impossible to write file to influxDB")
         write_success = False
@@ -346,6 +367,8 @@ def chunk_and_write_dataframe(dataframe_to_write: pd.DataFrame, measurement: str
     # Write each chunk in time series db
     for chunk in dataframe_chunk_list:
         df_client.write_points(chunk, database="physio_signals", measurement=measurement, tags=tags, protocol="json")
+        DATA_COUNTER_LIST.append(len(chunk))
+        logging.info('monitoring-RrInterval-input : {}'.format(sum(DATA_COUNTER_LIST)))
     return True
 
 

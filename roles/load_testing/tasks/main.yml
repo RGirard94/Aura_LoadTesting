@@ -41,7 +41,7 @@
     query: "select count(*) from MotionAccelerometer"
   register: MotionAccelerometer
 
-- name: Destroy physio_signals
+- name: destroy physio_signals
   become: true
   influxdb_database:
     hostname: "db.aura.healthcare.local"
