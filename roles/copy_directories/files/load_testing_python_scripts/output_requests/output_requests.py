@@ -52,7 +52,7 @@ def check_measurement_status(client):
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
-    config.read('/home/ansible/load_testing_python_scripts/scheduler/config.conf')
+    config.read('/home/ansible/load_testing_python_scripts/output_requests/config.conf')
 
     influxdb_client_constants = config["Influxdb Client"]
 
