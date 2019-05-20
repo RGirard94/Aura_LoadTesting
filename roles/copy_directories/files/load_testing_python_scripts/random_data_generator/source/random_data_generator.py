@@ -278,18 +278,28 @@ def generate_data_files(requirement_dict: dict, logs: bool):
             print('No data required for measurement {}'.format(measurement))
 
 
+def convert_hours_to_number_of_data_points(hours: int) -> int:
+    return {RR_INTERVAL: hours*60*70, MOTION_ACCELEROMETER: hours*60*60*50, MOTION_GYROSCOPE: hours*60*60*50}
+
+
 if __name__ == "__main__":
     RR_INTERVAL_DATA_POINTS_COUNT = 'RrInterval_datapoints_count'
     MOTION_ACC_DATA_POINTS_COUNT = 'MotionAcc_datapoints_count'
     MOTION_GYR_DATA_POINTS_COUNT = 'MotionGyr_datapoints_count'
+    NB_HOURS_OF_GENERATED_DATA_POINTS = 'Hours_of_data_points'
+    NB_OF_USERS = 'Nb_of_users'
 
     ap = argparse.ArgumentParser()
-    ap.add_argument('-rr', '--' + RR_INTERVAL_DATA_POINTS_COUNT, type=int, required=False, default="0",
+    ap.add_argument('-rr', '--' + RR_INTERVAL_DATA_POINTS_COUNT, type=int, required=False, default=0,
                     help="number of data point(s) for RrInterval")
-    ap.add_argument('-ma', '--' + MOTION_ACC_DATA_POINTS_COUNT, type=int, required=False, default="0",
+    ap.add_argument('-ma', '--' + MOTION_ACC_DATA_POINTS_COUNT, type=int, required=False, default=0,
                     help="number of data point(s) for MotionAccelerometer")
-    ap.add_argument('-mg', '--' + MOTION_GYR_DATA_POINTS_COUNT, type=int, required=False, default="0",
+    ap.add_argument('-mg', '--' + MOTION_GYR_DATA_POINTS_COUNT, type=int, required=False, default=0,
                     help="number of data point(s) for MotionGyroscope")
+    ap.add_argument('-hr', '--' + NB_HOURS_OF_GENERATED_DATA_POINTS, type=int, required=False, default=0,
+                    help="number of hour(s) during which data have been generated")
+    ap.add_argument('-nbu', '--' + NB_OF_USERS, type=int, required=False, default=0,
+                    help="number of users")
     args = vars(ap.parse_args())
 
     config = configparser.ConfigParser()
@@ -311,9 +321,15 @@ if __name__ == "__main__":
 
     logger_process.addHandler(stream_handler)
 
-    # PROCESS #
-    data_points_requirement = build_signal_to_data_points_count_dict(args[RR_INTERVAL_DATA_POINTS_COUNT],
-                                                                    args[MOTION_ACC_DATA_POINTS_COUNT],
-                                                                    args[MOTION_GYR_DATA_POINTS_COUNT])
+    hours_of_generated_data = convert_hours_to_number_of_data_points(args[NB_HOURS_OF_GENERATED_DATA_POINTS])
 
-    generate_data_files(data_points_requirement, config.getboolean('Logs', 'bool'))
+    # PROCESS #
+    """data_points_requirement = build_signal_to_data_points_count_dict(args[RR_INTERVAL_DATA_POINTS_COUNT],
+                                                                    args[MOTION_ACC_DATA_POINTS_COUNT],
+                                                                    args[MOTION_GYR_DATA_POINTS_COUNT])"""
+    for i in range(args[NB_OF_USERS]):
+        data_points_requirement = build_signal_to_data_points_count_dict(hours_of_generated_data[RR_INTERVAL],
+                                                                        hours_of_generated_data[MOTION_ACCELEROMETER],
+                                                                        hours_of_generated_data[MOTION_GYROSCOPE])
+
+        generate_data_files(data_points_requirement, config.getboolean('Logs', 'bool'))
