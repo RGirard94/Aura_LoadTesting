@@ -19,7 +19,7 @@ if __name__ == "__main__":
     args = vars(ap.parse_args())
 
     config = configparser.ConfigParser()
-    config.read('/home/ansible/load_testing_python_scripts/manual_data_injection/config.conf')
+    config.read('/opt/docker-data/tests/load_testing_python_scripts/manual_data_injection/config.conf')
 
     files_processing_paths = config["Paths"]
 

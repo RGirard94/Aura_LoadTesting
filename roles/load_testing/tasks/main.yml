@@ -1,6 +1,6 @@
 - name: execute python random data generator script
   become: true
-  command: python3.6 /home/ansible/load_testing_python_scripts/random_data_generator/source/random_data_generator.py -rr {{ nb_Rr_data }} -mg {{ nb_Mg_data }} -ma {{ nb_Ma_data }}
+  command: python3.6 /opt/docker-data/tests/load_testing_python_scripts/random_data_generator/source/random_data_generator.py -nbu {{ nb_u_data }} -hr {{ nb_h_data }}
 
 - name: timestamp
   command: "date +\"%T\""
@@ -8,7 +8,7 @@
 
 - name: execute python manual data injection file script
   become: true
-  command: python3.6 /home/ansible/load_testing_python_scripts/manual_data_injection/manual_data_injection.py --directory {{ directory_to_inject }}
+  command: python3.6 /opt/docker-data/tests/load_testing_python_scripts/manual_data_injection/manual_data_injection.py --directory {{ directory_to_inject }}
 
 - name: timestamp 2
   command: "date +\"%T\""
@@ -41,52 +41,52 @@
     query: "select count(*) from MotionAccelerometer"
   register: MotionAccelerometer
 
-- name: destroy physio_signals
-  become: true
-  influxdb_database:
-    hostname: "db.aura.healthcare.local"
-    port: 80
-    database_name: "physio_signals"
-    state: absent
+#- name: destroy physio_signals
+#  become: true
+#  influxdb_database:
+#    hostname: "db.aura.healthcare.local"
+#    port: 80
+#    database_name: "physio_signals"
+#    state: absent
 
 - name: details of the test
   vars:
     msg: |
-         Total number of data to inject : {{ nb_Rr_data|int + nb_Mg_data|int + nb_Ma_data|int }}
+         Total number of data to inject : {{ (nb_h_data|int)*(nb_u_data|int)*60*70 + (nb_h_data|int)*(nb_u_data|int)*60*60*50 + (nb_h_data|int)*(nb_u_data|int)*60*60*50 }}
          --------------------------------------------------------------------------------------------------------------
          RRINTERVAL
          -----------------
-            Number of RrInterval data to inject : {{ nb_Rr_data }}
+            Number of RrInterval data to inject : {{ (nb_h_data|int)*(nb_u_data|int)*60*70 }}
             Number of inserted RrInterval data : {{ RrInterval.query_results[0].count_RrInterval }}
-            Number of uninserted RrInterval data : {{ nb_Rr_data|int - RrInterval.query_results[0].count_RrInterval|int }}
+            Number of uninserted RrInterval data : {{ (nb_h_data|int)*(nb_u_data|int)*60*70 - RrInterval.query_results[0].count_RrInterval|int }}
          --------------------------------------------------------------------------------------------------------------
          MOTIONGYROSCOPE
          -----------------
-            Number of x_gyro data to inject : {{ nb_Mg_data }}
+            Number of x_gyro data to inject : {{ (nb_h_data|int)*(nb_u_data|int)*60*60*50 }}
             Number of inserted x_gyro data : {{ MotionGyroscope.query_results[0].count_x_gyro }}
-            Number of uninserted x_gyro data : {{ nb_Mg_data|int - MotionGyroscope.query_results[0].count_x_gyro|int }}
+            Number of uninserted x_gyro data : {{ (nb_h_data|int)*(nb_u_data|int)*60*60*50 - MotionGyroscope.query_results[0].count_x_gyro|int }}
             *
             Number of y_gyro data to inject : {{ nb_Mg_data }}
             Number of inserted y_gyro data : {{ MotionGyroscope.query_results[0].count_y_gyro }}
-            Number of uninserted y_gyro data : {{ nb_Mg_data|int - MotionGyroscope.query_results[0].count_y_gyro|int }}
+            Number of uninserted y_gyro data : {{ (nb_h_data|int)*(nb_u_data|int)*60*60*50 - MotionGyroscope.query_results[0].count_y_gyro|int }}
             *
             Number of z_gyro data to inject : {{ nb_Mg_data }}
             Number of inserted z_gyro data : {{ MotionGyroscope.query_results[0].count_z_gyro }}
-            Number of uninserted z_gyro data : {{ nb_Mg_data|int - MotionGyroscope.query_results[0].count_z_gyro|int }}
+            Number of uninserted z_gyro data : {{ (nb_h_data|int)*(nb_u_data|int)*60*60*50 - MotionGyroscope.query_results[0].count_z_gyro|int }}
          --------------------------------------------------------------------------------------------------------------
          MOTIONACCELEROMETER
          -----------------
-            Number of x_acm data to inject : {{ nb_Ma_data }}
+            Number of x_acm data to inject : {{ (nb_h_data|int)*(nb_u_data|int)*60*60*50 }}
             Number of inserted x_acm : {{ MotionAccelerometer.query_results[0].count_x_acm }}
-            Number of uninserted x_acm data : {{ nb_Ma_data|int - MotionAccelerometer.query_results[0].count_x_acm|int }}
+            Number of uninserted x_acm data : {{ (nb_h_data|int)*(nb_u_data|int)*60*60*50 - MotionAccelerometer.query_results[0].count_x_acm|int }}
             *
             Number of y_acm data to inject : {{ nb_Ma_data }}
             Number of inserted y_acm : {{ MotionAccelerometer.query_results[0].count_y_acm }}
-            Number of uninserted y_acm data : {{ nb_Ma_data|int - MotionAccelerometer.query_results[0].count_y_acm|int }}
+            Number of uninserted y_acm data : {{ (nb_h_data|int)*(nb_u_data|int)*60*60*50 - MotionAccelerometer.query_results[0].count_y_acm|int }}
             *
             Number of z_acm data to inject : {{ nb_Ma_data }}
             Number of inserted z_acm : {{ MotionAccelerometer.query_results[0].count_x_acm }}
-            Number of uninserted z_acm data : {{ nb_Ma_data|int - MotionAccelerometer.query_results[0].count_z_acm|int }}
+            Number of uninserted z_acm data : {{ (nb_h_data|int)*(nb_u_data|int)*60*60*50 - MotionAccelerometer.query_results[0].count_z_acm|int }}
          --------------------------------------------------------------------------------------------------------------
          injection start : {{ injection_start.end }}
          injection duration : {{ (injection_end.stdout_lines[0]|to_datetime('%H:%M:%S') - injection_start.stdout_lines[0]|to_datetime('%H:%M:%S')).seconds }}

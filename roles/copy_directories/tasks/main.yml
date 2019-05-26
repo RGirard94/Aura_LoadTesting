@@ -1,8 +1,3 @@
-- name: copy load_testing_python_scripts
-  copy:
-    src: "load_testing_python_scripts"
-    dest: "/home/ansible"
-
 - name: create directories
   become: true
   file:
@@ -11,6 +6,13 @@
     recurse: true
   with_items:
     - "{{ data_directory }}"
+    - "{{ tests_directory }}"
     - "{{ generated_data }}"
     - "{{ success_data }}"
     - "{{ problem_data }}"
+
+- name: copy load_testing_python_scripts
+  become: true
+  copy:
+    src: "load_testing_python_scripts"
+    dest: "{{ tests_directory }}"

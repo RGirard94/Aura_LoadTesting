@@ -1,2 +1,4 @@
 nb_Ma_data: "{{ lookup('env', 'ma') }}"
+nb_Mg_data: "{{ lookup('env', 'mg') }}"
+nb_Rr_data: "{{ lookup('env', 'rr') }}"
 directory_to_inject: "{{ lookup('env', 'd') }}"

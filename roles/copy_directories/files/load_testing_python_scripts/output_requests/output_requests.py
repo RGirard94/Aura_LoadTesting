@@ -15,7 +15,7 @@ def change_timestamp(unused_1, unused_2):
 
 logging.Formatter.converter = change_timestamp
 logging.basicConfig(
-    filename='/home/ansible/personal_logs/influxdb_manual_logs_output-json.log',
+    filename='/opt/docker-data/logstash/personal_logs/influxdb_manual_logs_output-json.log',
     filemode='a',
     format='%(asctime)s.%(msecs)03d : %(message)s',
     level=logging.INFO,
@@ -52,7 +52,7 @@ def check_measurement_status(client):
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
-    config.read('/home/ansible/load_testing_python_scripts/output_requests/config.conf')
+    config.read('/opt/docker-data/tests/load_testing_python_scripts/output_requests/config.conf')
 
     influxdb_client_constants = config["Influxdb Client"]
 
@@ -91,4 +91,4 @@ if __name__ == "__main__":
         if {'name': 'physio_signals'} not in check_database_status(CLIENT):
             check_physio_signals_exists = False
 
-        time.sleep(1)
+        time.sleep(30)

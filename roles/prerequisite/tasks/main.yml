@@ -54,3 +54,4 @@
     path: /etc/hosts
     line: '127.0.0.1  db.aura.healthcare.local'
     create: yes
+  when: is_prod == false

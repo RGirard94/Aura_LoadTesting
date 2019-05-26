@@ -1,10 +1,10 @@
 - name: execute python random data generator script
   become: true
-  command: python3.6 /home/ansible/load_testing_python_scripts/random_data_generator/source/random_data_generator.py -rr {{ nb_Rr_data }} -mg {{ nb_Mg_data }} -ma {{ nb_Ma_data }}
+  command: python3.6 /opt/docker-data/tests/load_testing_python_scripts/random_data_generator/source/random_data_generator.py -rr {{ nb_Rr_data }} -mg {{ nb_Mg_data }} -ma {{ nb_Ma_data }}
 
 - name: execute python manual data injection file script
   become: true
-  command: python3.6 /home/ansible/load_testing_python_scripts/manual_data_injection/manual_data_injection.py --directory {{ directory_to_inject }}
+  command: python3.6 /opt/docker-data/tests/load_testing_python_scripts/manual_data_injection/manual_data_injection.py --directory {{ directory_to_inject }}
 
 - name: timestamp
   command: "date +\"%T\""
@@ -35,10 +35,10 @@
   become: true
   copy:
     content: "{{ MotionAccelerometer }}"
-    dest: /home/ansible/personal_logs/read_test_motion_acc.log
+    dest: /opt/docker-data/logstash/personal_logs/read_test_motion_acc.log
 
 - name: count number of x_acm in file
-  shell: fgrep -o x_acm /home/ansible/personal_logs/read_test_motion_acc.log| wc -l
+  shell: fgrep -o x_acm /opt/docker-data/logstash/personal_logs/read_test_motion_acc.log| wc -l
   register: nb_of_x_acm
 
 - name: details of the test
